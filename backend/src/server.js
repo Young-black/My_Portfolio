@@ -1,7 +1,8 @@
-const express = require('express');
-const cors = require('cors');
-const dotenv = require('dotenv');
-const contactRoutes = require('./routes/contact');
+const express = require("express");
+const cors = require("cors");
+const dotenv = require("dotenv");
+const path = require("path");
+const contactRoutes = require("./routes/contact");
 
 // Load environment variables from .env file
 dotenv.config();
@@ -13,12 +14,16 @@ const PORT = process.env.PORT || 5000;
 app.use(cors()); // Enable CORS for frontend communication
 app.use(express.json()); // Parse JSON requests
 
-// Routes
-app.use('/api/contact', contactRoutes);
+// Serve static files from the frontend directory
+const frontendDir = path.join(__dirname, "../../frontend");
+app.use(express.static(frontendDir));
 
-// Basic route for testing
-app.get('/', (req, res) => {
-  res.send('Backend is running!');
+// API Routes
+app.use("/api/contact", contactRoutes);
+
+// Catch-all route to serve the frontend's index.html for all unmatched routes
+app.get("*", (req, res) => {
+  res.sendFile(path.join(frontendDir, "index.html"));
 });
 
 // Start server
